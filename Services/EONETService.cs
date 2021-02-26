@@ -3,6 +3,7 @@ using EONETEventsTest.Models;
 using EONETEventsTest.Services.Interfaces;
 using Interfaces.Repository;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,13 @@ namespace EONETEventsTest.Services.Implementation
     {
         private readonly IEONETRepository _eONETRepository;
         private readonly IMemoryCache _cache;
+        private readonly IConfiguration _configuration;
 
-        public EONETService(IEONETRepository eONETRepository, IMemoryCache cache)
+        public EONETService(IEONETRepository eONETRepository, IMemoryCache cache, IConfiguration configuration)
         {
             _eONETRepository = eONETRepository;
             _cache = cache;
+            _configuration = configuration;
         }
 
         public async Task<List<Event>> GetEvents(TableParams tableParams)
@@ -32,7 +35,10 @@ namespace EONETEventsTest.Services.Implementation
                 openEvents = await _eONETRepository.GetEvents();
                 if (openEvents != null)
                 {
-                    _cache.Set(EventStatus.Open, openEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(13)));
+                    double cacheExp = 0;
+                    double.TryParse(_configuration["OpenEventsCacheExpiration"], out cacheExp);
+                    cacheExp = cacheExp == 0 ? 750 : cacheExp;
+                    _cache.Set(EventStatus.Open, openEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
                 }
             }            
             if (!_cache.TryGetValue(EventStatus.Closed, out closedEvents))
@@ -40,7 +46,10 @@ namespace EONETEventsTest.Services.Implementation
                 closedEvents = await _eONETRepository.GetEvents(EventStatus.Closed);
                 if (closedEvents != null)
                 {
-                    _cache.Set(EventStatus.Closed, closedEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(13)));
+                    double cacheExp = 0;
+                    double.TryParse(_configuration["ClosedEventsCacheExpiration"], out cacheExp);
+                    cacheExp = cacheExp == 0 ? 750 : cacheExp;
+                    _cache.Set(EventStatus.Closed, closedEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
                 }
             }
 
