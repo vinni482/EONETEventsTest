@@ -36,7 +36,8 @@ namespace EONETEventsTest
             });
 
             services.AddSwaggerGen();
-            
+            services.AddMemoryCache();
+
             services.AddScoped<IEONETService, EONETService>();
             services.AddScoped<IEONETRepository, EONETRepository>();
         }
