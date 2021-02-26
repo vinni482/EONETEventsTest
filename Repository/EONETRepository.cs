@@ -1,4 +1,5 @@
-﻿using EONETEventsTest.Models;
+﻿using Enums;
+using EONETEventsTest.Models;
 using Interfaces.Repository;
 using RestSharp;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Repository
             _client = new RestClient("https://eonet.sci.gsfc.nasa.gov");
         }
 
-        public async Task<List<Event>> GetEvents(string status = "open")
+        public async Task<List<Event>> GetEvents(string status = EventStatus.Open)
         {
             var requestOpen = new RestRequest("api/v2.1/events", Method.GET);
             requestOpen.AddParameter("status", status);

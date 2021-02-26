@@ -1,4 +1,5 @@
-﻿using EONETEventsTest.Models;
+﻿using Enums;
+using EONETEventsTest.Models;
 using EONETEventsTest.Services.Interfaces;
 using Interfaces.Repository;
 using Microsoft.Extensions.Caching.Memory;
@@ -26,20 +27,20 @@ namespace EONETEventsTest.Services.Implementation
             List<Event> openEvents = null;
             List<Event> closedEvents = null;
 
-            if (!_cache.TryGetValue("open", out openEvents))
+            if (!_cache.TryGetValue(EventStatus.Open, out openEvents))
             {
                 openEvents = await _eONETRepository.GetEvents();
                 if (openEvents != null)
                 {
-                    _cache.Set("open", openEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(13)));
+                    _cache.Set(EventStatus.Open, openEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(13)));
                 }
             }            
-            if (!_cache.TryGetValue("closed", out closedEvents))
+            if (!_cache.TryGetValue(EventStatus.Closed, out closedEvents))
             {
-                closedEvents = await _eONETRepository.GetEvents("closed");
+                closedEvents = await _eONETRepository.GetEvents(EventStatus.Closed);
                 if (closedEvents != null)
                 {
-                    _cache.Set("closed", closedEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(13)));
+                    _cache.Set(EventStatus.Closed, closedEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(13)));
                 }
             }
 
@@ -47,20 +48,20 @@ namespace EONETEventsTest.Services.Implementation
             if (closedEvents != null && closedEvents.Any()) events.AddRange(closedEvents);
             if (events.Any())
             {
-                if (tableParams.Status != null && tableParams.Status.ToLower() == "open")
+                if (tableParams.Status != null && tableParams.Status.ToLower() == EventStatus.Open)
                     events = events.Where(x => x.closed == null).ToList();
-                if (tableParams.Status != null && tableParams.Status.ToLower() == "closed")
+                if (tableParams.Status != null && tableParams.Status.ToLower() == EventStatus.Closed)
                     events = events.Where(x => x.closed != null).ToList();
                 if (!string.IsNullOrWhiteSpace(tableParams.Category))
                     events = events.Where(x => x.categories.Any(c => c.title != null && c.title.ToLower().Contains(tableParams.Category.Trim().ToLower()))).ToList();
 
-                if (tableParams.OrderBy.ToLower() == "date")
+                if (tableParams.OrderBy.ToLower() == OrderBy.Date)
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()).ToList() :
                                                         events.OrderByDescending(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()).ToList();
-                if (tableParams.OrderBy.ToLower() == "status")
+                if (tableParams.OrderBy.ToLower() == OrderBy.Status)
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.closed).ToList() :
                                                         events.OrderByDescending(x => x.closed).ToList();
-                if (tableParams.OrderBy.ToLower() == "category")
+                if (tableParams.OrderBy.ToLower() == OrderBy.Category)
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.categories.Select(c => c.title).FirstOrDefault()).ToList() :
                                                         events.OrderByDescending(x => x.categories.Select(c => c.title).FirstOrDefault()).ToList();
             }
