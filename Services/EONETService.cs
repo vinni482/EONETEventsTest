@@ -55,15 +55,18 @@ namespace EONETEventsTest.Services.Implementation
                 if (!string.IsNullOrWhiteSpace(tableParams.Category))
                     events = events.Where(x => x.categories.Any(c => c.title != null && c.title.ToLower().Contains(tableParams.Category.Trim().ToLower()))).ToList();
 
-                if (tableParams.OrderBy.ToLower() == OrderBy.Date)
+                if (tableParams.OrderBy != null && tableParams.OrderBy.ToLower() == OrderBy.Date)
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()).ToList() :
                                                         events.OrderByDescending(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()).ToList();
-                if (tableParams.OrderBy.ToLower() == OrderBy.Status)
+                if (tableParams.OrderBy != null && tableParams.OrderBy.ToLower() == OrderBy.Status)
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.closed).ToList() :
                                                         events.OrderByDescending(x => x.closed).ToList();
-                if (tableParams.OrderBy.ToLower() == OrderBy.Category)
+                if (tableParams.OrderBy != null && tableParams.OrderBy.ToLower() == OrderBy.Category)
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.categories.Select(c => c.title).FirstOrDefault()).ToList() :
                                                         events.OrderByDescending(x => x.categories.Select(c => c.title).FirstOrDefault()).ToList();
+
+                if (tableParams.PageNumber >= 1)
+                    events = events.Skip((tableParams.PageNumber - 1) * tableParams.PageSize).Take(tableParams.PageSize).ToList();
             }
             return events;
         }
