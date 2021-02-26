@@ -25,6 +25,7 @@ namespace EONETEventsTest.Services.Implementation
             List<Event> events = new List<Event>();
             List<Event> openEvents = null;
             List<Event> closedEvents = null;
+
             if (!_cache.TryGetValue("open", out openEvents))
             {
                 openEvents = await _eONETRepository.GetEvents();
@@ -46,6 +47,13 @@ namespace EONETEventsTest.Services.Implementation
             if (closedEvents != null && closedEvents.Any()) events.AddRange(closedEvents);
             if (events.Any())
             {
+                if (tableParams.Status != null && tableParams.Status.ToLower() == "open")
+                    events = events.Where(x => x.closed == null).ToList();
+                if (tableParams.Status != null && tableParams.Status.ToLower() == "closed")
+                    events = events.Where(x => x.closed != null).ToList();
+                if (!string.IsNullOrWhiteSpace(tableParams.Category))
+                    events = events.Where(x => x.categories.Any(c => c.title != null && c.title.ToLower().Contains(tableParams.Category.Trim().ToLower()))).ToList();
+
                 if (tableParams.OrderBy.ToLower() == "date")
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()).ToList() :
                                                         events.OrderByDescending(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()).ToList();
