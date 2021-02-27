@@ -5,31 +5,31 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { forecasts: [], loading: true };
+    this.state = { events: [], loading: true };
   }
 
   componentDidMount() {
-    this.populateWeatherData();
+    this.populateEventsData();
   }
 
-  static renderForecastsTable(forecasts) {
+  static renderTable(events) {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
           <tr>
+            <th>Title</th>
             <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
+            <th>Status</th>
+            <th>Category</th>
           </tr>
         </thead>
         <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
+          {events.map(event =>
+            <tr key={event.id}>
+              <td>{event.title}</td>
+              <td>{event.geometries[0].date}</td>
+              <td>{event.closed != null ? "closed" : "open"}</td>
+              <td>{event.categories[0].title}</td>
             </tr>
           )}
         </tbody>
@@ -40,20 +40,27 @@ export class FetchData extends Component {
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : FetchData.renderForecastsTable(this.state.forecasts);
+        : FetchData.renderTable(this.state.events);
 
     return (
       <div>
-        <h1 id="tabelLabel" >Weather forecast</h1>
+        <h1 id="tabelLabel" >EONET Events</h1>
         <p>This component demonstrates fetching data from the server.</p>
         {contents}
       </div>
     );
   }
 
-  async populateWeatherData() {
-    const response = await fetch('EONET');
+  async populateEventsData() {
+      const response = await fetch('events', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ PageNumber: 1 })
+      });
+
     const data = await response.json();
-    this.setState({ forecasts: data, loading: false });
+    this.setState({ events: data, loading: false });
   }
 }

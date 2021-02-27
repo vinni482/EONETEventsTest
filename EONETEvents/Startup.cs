@@ -38,8 +38,8 @@ namespace EONETEventsTest
             services.AddSwaggerGen();
             services.AddMemoryCache();
 
-            services.AddScoped<IEONETService, EONETService>();
-            services.AddScoped<IEONETRepository, EONETRepository>();
+            services.AddTransient<IEONETService, EONETService>();
+            services.AddTransient<IEONETRepository, EONETRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
