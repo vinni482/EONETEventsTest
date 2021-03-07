@@ -12,4 +12,10 @@
         public const string Status = "status";
         public const string Category = "category";
     }
+
+    public static class Configurations
+    {
+        public const string ClosedEventsCacheExpiration = "ClosedEventsCacheExpiration";
+        public const string OpenEventsCacheExpiration = "OpenEventsCacheExpiration";
+    }
 }

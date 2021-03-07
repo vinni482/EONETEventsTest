@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,31 +31,44 @@ namespace EONETEventsTest.Services.Implementation
             List<Event> openEvents = null;
             List<Event> closedEvents = null;
 
-            if (!_cache.TryGetValue(EventStatus.Open, out openEvents))
+            _cache.TryGetValue(EventStatus.Open, out openEvents);
+            _cache.TryGetValue(EventStatus.Closed, out closedEvents);
+
+            if (openEvents == null && closedEvents == null) //run in parallel
             {
-                openEvents = await _eONETRepository.GetEvents();
-                if (openEvents != null)
-                {
-                    double cacheExp = 0;
-                    double.TryParse(_configuration["OpenEventsCacheExpiration"], out cacheExp);
-                    cacheExp = cacheExp == 0 ? 750 : cacheExp;
-                    _cache.Set(EventStatus.Open, openEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
-                }
-            }            
-            if (!_cache.TryGetValue(EventStatus.Closed, out closedEvents))
+                Task<EventsObject> openTask = _eONETRepository.GetEvents(EventStatus.Open);
+                Task<EventsObject> closedTask = _eONETRepository.GetEvents(EventStatus.Closed);                
+                await Task.WhenAll(openTask, closedTask); //wait for both
+                openEvents = openTask.Result?.events;
+                closedEvents = closedTask.Result?.events;
+            }
+            else if (openEvents == null)
             {
-                closedEvents = await _eONETRepository.GetEvents(EventStatus.Closed);
-                if (closedEvents != null)
-                {
-                    double cacheExp = 0;
-                    double.TryParse(_configuration["ClosedEventsCacheExpiration"], out cacheExp);
-                    cacheExp = cacheExp == 0 ? 750 : cacheExp;
-                    _cache.Set(EventStatus.Closed, closedEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
-                }
+                var eventsObject = await _eONETRepository.GetEvents(EventStatus.Open);
+                openEvents = eventsObject?.events;
+            }
+            else if (closedEvents == null)
+            {
+                var eventsObject = await _eONETRepository.GetEvents(EventStatus.Closed);
+                closedEvents = eventsObject?.events;
             }
 
-            if (openEvents != null && openEvents.Any()) events.AddRange(openEvents);
-            if (closedEvents != null && closedEvents.Any()) events.AddRange(closedEvents);
+            if (openEvents != null && openEvents.Any()) {
+                double cacheExp = 0;
+                double.TryParse(_configuration[Configurations.OpenEventsCacheExpiration], out cacheExp);
+                cacheExp = cacheExp == 0 ? 750 : cacheExp;
+                _cache.Set(EventStatus.Open, openEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
+
+                events.AddRange(openEvents);
+            }
+            if (closedEvents != null && closedEvents.Any()) {
+                double cacheExp = 0;
+                double.TryParse(_configuration[Configurations.ClosedEventsCacheExpiration], out cacheExp);
+                cacheExp = cacheExp == 0 ? 750 : cacheExp;
+                _cache.Set(EventStatus.Closed, closedEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
+
+                events.AddRange(closedEvents);
+            } 
             if (events.Any())
             {
                 if (tableParams.Status != null && tableParams.Status.ToLower() == EventStatus.Open)

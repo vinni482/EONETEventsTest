@@ -7,7 +7,7 @@ namespace Interfaces.Repository
 {
     public interface IEONETRepository
     {
-        Task<List<Event>> GetEvents(string status = EventStatus.Open);
+        Task<EventsObject> GetEvents(string status = EventStatus.Open);
         Task<Event> GetEvent(string id);
     }
 }

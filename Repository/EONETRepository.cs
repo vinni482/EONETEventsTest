@@ -16,13 +16,13 @@ namespace Repository
             _client = new RestClient("https://eonet.sci.gsfc.nasa.gov");
         }
 
-        public async Task<List<Event>> GetEvents(string status = EventStatus.Open)
+        public async Task<EventsObject> GetEvents(string status = EventStatus.Open)
         {
             var requestOpen = new RestRequest("api/v2.1/events", Method.GET);
             requestOpen.AddParameter("status", status);
             var queryResult = await _client.ExecuteAsync<EventsObject>(requestOpen);
 
-            return queryResult.Data?.events;
+            return queryResult.Data;
         }
 
         public async Task<Event> GetEvent(string id)
