@@ -1,4 +1,5 @@
-﻿using EONETEventsTest.Services.Interfaces;
+﻿using Enums;
+using EONETEventsTest.Services.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -27,7 +28,8 @@ namespace EONETEventsTest.HostedServices
 
         private void DoWork(object state)
         {
-            _eONETService.GetEvents(new Models.TableParams()); //to prefill cache in background
+            _eONETService.UpdateEventsCache(EventStatus.Open);
+            _eONETService.UpdateEventsCache(EventStatus.Closed);
         }
 
         public Task StopAsync(CancellationToken stoppingToken)

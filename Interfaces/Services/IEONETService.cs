@@ -8,5 +8,6 @@ namespace EONETEventsTest.Services.Interfaces
     {
         Task<List<Event>> GetEvents(TableParams tableParams);
         Task<Event> GetEvent(string id);
+        Task<List<Event>> UpdateEventsCache(string eventStatus);
     }
 }

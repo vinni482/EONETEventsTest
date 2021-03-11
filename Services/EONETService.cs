@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EONETEventsTest.Services.Implementation
@@ -33,39 +34,27 @@ namespace EONETEventsTest.Services.Implementation
             _cache.TryGetValue(EventStatus.Open, out openEvents);
             _cache.TryGetValue(EventStatus.Closed, out closedEvents);
 
-            if (openEvents == null && closedEvents == null) //run in parallel
+            if (openEvents == null && closedEvents == null)
             {
-                Task<EventsObject> openTask = _eONETRepository.GetEvents(EventStatus.Open);
-                Task<EventsObject> closedTask = _eONETRepository.GetEvents(EventStatus.Closed);                
-                await Task.WhenAll(openTask, closedTask); //wait for both
-                openEvents = openTask.Result?.events;
-                closedEvents = closedTask.Result?.events;
+                Task<List<Event>> openTask = this.UpdateEventsCache(EventStatus.Open);
+                Task<List<Event>> closedTask = this.UpdateEventsCache(EventStatus.Closed);
+                await Task.WhenAll(openTask, closedTask); //run in parallel. wait for both
+                openEvents = openTask.Result;
+                closedEvents = closedTask.Result;
             }
             else if (openEvents == null)
             {
-                var eventsObject = await _eONETRepository.GetEvents(EventStatus.Open);
-                openEvents = eventsObject?.events;
+                openEvents = await this.UpdateEventsCache(EventStatus.Open);
             }
             else if (closedEvents == null)
             {
-                var eventsObject = await _eONETRepository.GetEvents(EventStatus.Closed);
-                closedEvents = eventsObject?.events;
+                closedEvents = await this.UpdateEventsCache(EventStatus.Closed);
             }
 
             if (openEvents != null && openEvents.Any()) {
-                double cacheExp = 0;
-                double.TryParse(_configuration[Configurations.OpenEventsCacheExpiration], out cacheExp);
-                cacheExp = cacheExp == 0 ? 750 : cacheExp;
-                _cache.Set(EventStatus.Open, openEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
-
                 events.AddRange(openEvents);
             }
             if (closedEvents != null && closedEvents.Any()) {
-                double cacheExp = 0;
-                double.TryParse(_configuration[Configurations.ClosedEventsCacheExpiration], out cacheExp);
-                cacheExp = cacheExp == 0 ? 750 : cacheExp;
-                _cache.Set(EventStatus.Closed, closedEvents, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
-
                 events.AddRange(closedEvents);
             } 
 
@@ -97,6 +86,20 @@ namespace EONETEventsTest.Services.Implementation
         public async Task<Event> GetEvent(string id)
         {
             return await _eONETRepository.GetEvent(id);
+        }
+
+        public async Task<List<Event>> UpdateEventsCache(string eventStatus)
+        {
+            var eventsObj = await _eONETRepository.GetEvents(eventStatus);
+            if (eventsObj != null && eventsObj.events.Any())
+            {
+                double cacheExp = 0;
+                double.TryParse(_configuration[eventStatus == EventStatus.Open ? Configurations.OpenEventsCacheExpiration : Configurations.ClosedEventsCacheExpiration], out cacheExp);
+                cacheExp = cacheExp == 0 ? 750 : cacheExp;
+                _cache.Set(eventStatus, eventsObj.events, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheExp)));
+            }
+
+            return eventsObj?.events;
         }
     }
 }
