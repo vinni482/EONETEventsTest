@@ -5,23 +5,28 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { events: [], loading: true };
+    this.state = { events: [], loading: true, order: "desc" };
   }
 
   componentDidMount() {
     this.populateEventsData();
   }
 
-  static renderTable(events) {
+    handleOrder(orderBy) {
+        this.state.order = this.state.order == "asc" ? "desc" : "asc";
+        this.populateEventsData(orderBy, this.state.order);
+    }
+  
+  renderTable(events) {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
-          <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Category</th>
-          </tr>
+            <tr>
+                <th onClick={() => this.handleOrder('Title')}>Title</th>
+                <th onClick={() => this.handleOrder('Date')}>Date</th>
+                <th onClick={() => this.handleOrder('Status')}>Status</th>
+                <th onClick={() => this.handleOrder('Category')}>Category</th>
+            </tr>
         </thead>
         <tbody>
           {events.map(event =>
@@ -40,7 +45,7 @@ export class FetchData extends Component {
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-        : FetchData.renderTable(this.state.events);
+        : this.renderTable(this.state.events);
 
     return (
       <div>
@@ -51,13 +56,13 @@ export class FetchData extends Component {
     );
   }
 
-  async populateEventsData() {
+    async populateEventsData(orderBy, order) {
       const response = await fetch('events', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ PageNumber: 1 })
+          body: JSON.stringify({ PageNumber: 1, OrderBy: orderBy, Order: order })
       });
 
     const data = await response.json();

@@ -8,6 +8,7 @@
 
     public static class OrderBy
     {
+        public const string Title = "title";
         public const string Date = "date";
         public const string Status = "status";
         public const string Category = "category";

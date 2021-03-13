@@ -67,6 +67,9 @@ namespace EONETEventsTest.Services.Implementation
                 if (!string.IsNullOrWhiteSpace(tableParams.Category))
                     events = events.Where(x => x.categories.Any(c => c.title != null && c.title.ToLower().Contains(tableParams.Category.Trim().ToLower()))).ToList();
 
+                if (tableParams.OrderBy != null && tableParams.OrderBy.ToLower() == OrderBy.Title)
+                    events = tableParams.Order == "asc" ? events.OrderBy(x => x.title).ToList() :
+                                                        events.OrderByDescending(x => x.title).ToList();
                 if (tableParams.OrderBy != null && tableParams.OrderBy.ToLower() == OrderBy.Date)
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()).ToList() :
                                                         events.OrderByDescending(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()).ToList();

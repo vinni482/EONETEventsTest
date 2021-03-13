@@ -4,7 +4,7 @@
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; } = 20;
-        public string Order { get; set; }
+        public string Order { get; set; } = "asc";
         public string OrderBy { get; set; }
         public string Date { get; set; }
         public string Status { get; set; }
