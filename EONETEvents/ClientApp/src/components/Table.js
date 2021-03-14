@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as Icon from 'react-bootstrap-icons';
+import './Table.css';
 
 export default class Table extends Component {
 
@@ -63,7 +64,7 @@ export default class Table extends Component {
                     {data.map(event =>
                         <tr key={event.id} className={event.closed != null ? "table-secondary" : ""}>
                             <td>{event.title}</td>
-                            <td>{event.geometries[0].date}</td>
+                            <td>{new Date(event.geometries[0].date).toLocaleString()}</td>
                             <td>{event.closed != null ? "closed" : "open"}</td>
                             <td>{event.categories[0].title}</td>
                         </tr>
