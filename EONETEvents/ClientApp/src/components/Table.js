@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as Icon from 'react-bootstrap-icons';
 
 export default class Table extends Component {
 
@@ -9,6 +10,7 @@ export default class Table extends Component {
     
     handleOrder(orderBy) {
         this.state.order = this.state.order == "asc" ? "desc" : "asc";
+        this.state.orderby = orderBy;
         this.props.onSort(orderBy, this.state.order);    
     }
 
@@ -19,10 +21,42 @@ export default class Table extends Component {
             <table className='table' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
-                        <th onClick={() => this.handleOrder('Title')}>Title</th>
-                        <th onClick={() => this.handleOrder('Date')}>Date</th>
-                        <th onClick={() => this.handleOrder('Status')}>Status</th>
-                        <th onClick={() => this.handleOrder('Category')}>Category</th>
+                        <th onClick={() => this.handleOrder('Title')}>
+                            {this.state.order == "asc" && this.state.orderby == "Title" && (
+                                <Icon.ArrowUp />
+                            )}
+                            {this.state.order == "desc" && this.state.orderby == "Title" && (
+                                <Icon.ArrowDown />
+                            )}
+                            Title
+                        </th>
+                        <th onClick={() => this.handleOrder('Date')}>
+                            {this.state.order == "asc" && this.state.orderby == "Date" && (
+                                <Icon.ArrowUp />
+                            )}
+                            {this.state.order == "desc" && this.state.orderby == "Date" && (
+                                <Icon.ArrowDown />
+                            )}
+                            Date
+                        </th>
+                        <th onClick={() => this.handleOrder('Status')}>
+                            {this.state.order == "asc" && this.state.orderby == "Status" && (
+                                <Icon.ArrowUp />
+                            )}
+                            {this.state.order == "desc" && this.state.orderby == "Status" && (
+                                <Icon.ArrowDown />
+                            )}
+                            Status
+                        </th>
+                        <th onClick={() => this.handleOrder('Category')}>
+                            {this.state.order == "asc" && this.state.orderby == "Category" && (
+                                <Icon.ArrowUp />
+                            )}
+                            {this.state.order == "desc" && this.state.orderby == "Category" && (
+                                <Icon.ArrowDown />
+                            )}
+                            Category
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
