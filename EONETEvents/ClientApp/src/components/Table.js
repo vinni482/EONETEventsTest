@@ -16,7 +16,7 @@ export default class Table extends Component {
         const { data } = this.props;
 
         return (
-            <table className='table table-striped' aria-labelledby="tabelLabel">
+            <table className='table' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
                         <th onClick={() => this.handleOrder('Title')}>Title</th>
@@ -27,7 +27,7 @@ export default class Table extends Component {
                 </thead>
                 <tbody>
                     {data.map(event =>
-                        <tr key={event.id}>
+                        <tr key={event.id} className={event.closed != null ? "table-secondary" : ""}>
                             <td>{event.title}</td>
                             <td>{event.geometries[0].date}</td>
                             <td>{event.closed != null ? "closed" : "open"}</td>
