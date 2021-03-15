@@ -10,19 +10,20 @@ export class FetchData extends Component {
         this.state = { events: [], loading: true };
         this.handleSort = this.handleSort.bind(this);
         this.handleFilter = this.handleFilter.bind(this);
+        this.populateEventsData = this.populateEventsData.bind(this);
     }
 
     componentDidMount() {
         this.populateEventsData();
     }
 
-    handleSort(orderby, order) {
-        this.setState({ orderby: orderby, order: order });
+    async handleSort(orderby, order) {
+        await this.setState({ orderby: orderby, order: order });
         this.populateEventsData();
     }
 
-    handleFilter(title, date, status, category) {
-        this.setState({ title: title, date: date, status: status, category: category });
+    async handleFilter(title, date, status, category) {
+        await this.setState({ title: title, date: date, status: status, category: category });
         this.populateEventsData();
     }
 

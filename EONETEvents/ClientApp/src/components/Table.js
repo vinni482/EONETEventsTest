@@ -7,15 +7,15 @@ export default class Table extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { order: "desc", title: "", date: "", status: "", category: "" };
+        this.state = { order: "desc", orderby: "", title: "", date: "", status: "", category: "" };
     }
     
-    handleOrder(orderBy) {
-        this.setState({ order: this.state.order === "asc" ? "desc" : "asc", orderby: orderBy });
-        this.props.onSort(orderBy, this.state.order);    
+    async handleOrder(orderby) {
+        await this.setState({ order: this.state.order === "asc" ? "desc" : "asc", orderby: orderby });
+        this.props.onSort(this.state.orderby, this.state.order);    
     }
 
-    handleFilter = debounce(() => { this.props.onFilter(this.state.title, this.state.date, this.state.status, this.state.category); }, 2000);
+    handleFilter = debounce(() => { this.props.onFilter(this.state.title, this.state.date, this.state.status, this.state.category); }, 1000);
 
     render() {
         const { data } = this.props;
@@ -24,7 +24,7 @@ export default class Table extends Component {
             <table className='table' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
-                        <th onClick={() => this.handleOrder('Title')}>
+                        <th onClick={() => this.handleOrder("Title")}>
                             {this.state.order === "asc" && this.state.orderby === "Title" && (
                                 <Icon.ArrowUp />
                             )}
@@ -33,7 +33,7 @@ export default class Table extends Component {
                             )}
                             Title
                         </th>
-                        <th onClick={() => this.handleOrder('Date')}>
+                        <th onClick={() => this.handleOrder("Date")}>
                             {this.state.order === "asc" && this.state.orderby === "Date" && (
                                 <Icon.ArrowUp />
                             )}
@@ -42,7 +42,7 @@ export default class Table extends Component {
                             )}
                             Date
                         </th>
-                        <th onClick={() => this.handleOrder('Status')}>
+                        <th onClick={() => this.handleOrder("Status")}>
                             {this.state.order === "asc" && this.state.orderby === "Status" && (
                                 <Icon.ArrowUp />
                             )}
@@ -51,7 +51,7 @@ export default class Table extends Component {
                             )}
                             Status
                         </th>
-                        <th onClick={() => this.handleOrder('Category')}>
+                        <th onClick={() => this.handleOrder("Category")}>
                             {this.state.order === "asc" && this.state.orderby === "Category" && (
                                 <Icon.ArrowUp />
                             )}
