@@ -23,9 +23,6 @@ namespace EONETEventsTest.Controllers
         public async Task<ActionResult<List<Event>>> GetEvents([FromBody]TableParams tableParams)
         {
             var result = await _eONETService.GetEvents(tableParams);
-            if (result == null || !result.Any())
-                return NotFound();
-
             return Ok(result);
         }
 
@@ -34,9 +31,6 @@ namespace EONETEventsTest.Controllers
         public async Task<ActionResult<Event>> GetEvent(string id)
         {
             var result = await _eONETService.GetEvent(id);
-            if (result == null)
-                return NotFound();
-
             return Ok(result);
         }
     }

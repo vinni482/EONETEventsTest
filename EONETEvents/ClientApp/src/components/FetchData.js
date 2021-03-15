@@ -10,7 +10,6 @@ export class FetchData extends Component {
         this.state = { events: [], loading: true };
         this.handleSort = this.handleSort.bind(this);
         this.handleFilter = this.handleFilter.bind(this);
-        this.populateEventsData = this.populateEventsData.bind(this);
     }
 
     componentDidMount() {
