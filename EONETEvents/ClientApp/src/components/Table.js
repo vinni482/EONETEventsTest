@@ -62,9 +62,9 @@ export default class Table extends Component {
                         </th>
                     </tr>
                     <tr className="filters">
-                        <th><input type="text" className="form-control" placeholder="Title" onChange={(e) => { this.setState({ title: e.target.value }); this.handleFilter(); }} value={this.state.title} /></th>
-                        <th><input type="text" className="form-control" placeholder="Date" onChange={(e) => { this.setState({ date: e.target.value }); this.handleFilter(); }} value={this.state.date} disabled /></th>
-                        <th><input type="text" className="form-control" placeholder="Status" onChange={(e) => { this.setState({ status: e.target.value }); this.handleFilter(); }} value={this.state.status} disabled /></th>
+                        <th><input type="text" className="form-control" placeholder="Title" onChange={e => { this.setState({ title: e.target.value }); this.handleFilter(); }} value={this.state.title} /></th>
+                        <th><input type="date" max={new Date().toISOString().split("T")[0]} className="form-control" placeholder="Date" onChange={e => { this.setState({ date: e.target.value }); this.handleFilter(); }} value={this.state.date} /></th>
+                        <th><input type="text" className="form-control" placeholder="Status" onChange={e => { this.setState({ status: e.target.value }); this.handleFilter(); }} value={this.state.status} /></th>
                         <th><input type="text" className="form-control" placeholder="Category" onChange={e => { this.setState({ category: e.target.value }); this.handleFilter(); }} value={this.state.category} /></th>
                     </tr>
                 </thead>

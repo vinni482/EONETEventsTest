@@ -62,6 +62,15 @@ namespace EONETEventsTest.Services.Implementation
             {
                 if (!string.IsNullOrWhiteSpace(tableParams.Title))
                     events = events.Where(x => x.title.ToLower().Contains(tableParams.Title.Trim().ToLower())).ToList();
+                if (!string.IsNullOrWhiteSpace(tableParams.Date)) 
+                {
+                    try
+                    {
+                        var date = DateTime.Parse(tableParams.Date);
+                        events = events.Where(x => x.geometries.OrderBy(g => g.date).Select(g => g.date).FirstOrDefault()?.ToShortDateString() == date.ToShortDateString()).ToList();
+                    } 
+                    catch { }
+                }
                 if (tableParams.Status != null && tableParams.Status.ToLower() == EventStatus.Open)
                     events = events.Where(x => x.closed == null).ToList();
                 if (tableParams.Status != null && tableParams.Status.ToLower() == EventStatus.Closed)
