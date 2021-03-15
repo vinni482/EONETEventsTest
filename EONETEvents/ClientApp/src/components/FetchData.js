@@ -9,20 +9,27 @@ export class FetchData extends Component {
         super(props);
         this.state = { events: [], loading: true };
         this.handleSort = this.handleSort.bind(this);
+        this.handleFilter = this.handleFilter.bind(this);
     }
 
     componentDidMount() {
         this.populateEventsData();
     }
 
-    handleSort(orderBy, order) {
-        this.populateEventsData(orderBy, order);
+    handleSort(orderby, order) {
+        this.setState({ orderby: orderby, order: order });
+        this.populateEventsData();
+    }
+
+    handleFilter(title, date, status, category) {
+        this.setState({ title: title, date: date, status: status, category: category });
+        this.populateEventsData();
     }
 
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : <Table data={this.state.events} onSort={this.handleSort} />;
+            : <Table data={this.state.events} onSort={this.handleSort} onFilter={this.handleFilter} />;
 
         return (
             <div>
@@ -33,13 +40,21 @@ export class FetchData extends Component {
         );
     }
 
-    async populateEventsData(orderBy, order) {
+    async populateEventsData() {
         const response = await fetch('events', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ PageNumber: 1, OrderBy: orderBy, Order: order })
+            body: JSON.stringify({
+                PageNumber: 1,
+                OrderBy: this.state.orderby,
+                Order: this.state.order,
+                Title: this.state.title,
+                Date: this.state.date,
+                Status: this.state.status,
+                Category: this.state.category
+            })
         });
 
         const data = await response.json();

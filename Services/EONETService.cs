@@ -60,6 +60,8 @@ namespace EONETEventsTest.Services.Implementation
 
             if (events.Any())
             {
+                if (!string.IsNullOrWhiteSpace(tableParams.Title))
+                    events = events.Where(x => x.title.ToLower().Contains(tableParams.Title.Trim().ToLower())).ToList();
                 if (tableParams.Status != null && tableParams.Status.ToLower() == EventStatus.Open)
                     events = events.Where(x => x.closed == null).ToList();
                 if (tableParams.Status != null && tableParams.Status.ToLower() == EventStatus.Closed)

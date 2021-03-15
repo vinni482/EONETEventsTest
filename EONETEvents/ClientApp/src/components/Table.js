@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { debounce } from "lodash";
 import * as Icon from 'react-bootstrap-icons';
 import './Table.css';
 
@@ -6,13 +7,15 @@ export default class Table extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { order: "desc" };
+        this.state = { order: "desc", title: "", date: "", status: "", category: "" };
     }
     
     handleOrder(orderBy) {
         this.setState({ order: this.state.order === "asc" ? "desc" : "asc", orderby: orderBy });
         this.props.onSort(orderBy, this.state.order);    
     }
+
+    handleFilter = debounce(() => { this.props.onFilter(this.state.title, this.state.date, this.state.status, this.state.category); }, 2000);
 
     render() {
         const { data } = this.props;
@@ -57,6 +60,12 @@ export default class Table extends Component {
                             )}
                             Category
                         </th>
+                    </tr>
+                    <tr className="filters">
+                        <th><input type="text" className="form-control" placeholder="Title" onChange={(e) => { this.setState({ title: e.target.value }); this.handleFilter(); }} value={this.state.title} /></th>
+                        <th><input type="text" className="form-control" placeholder="Date" onChange={(e) => { this.setState({ date: e.target.value }); this.handleFilter(); }} value={this.state.date} disabled /></th>
+                        <th><input type="text" className="form-control" placeholder="Status" onChange={(e) => { this.setState({ status: e.target.value }); this.handleFilter(); }} value={this.state.status} disabled /></th>
+                        <th><input type="text" className="form-control" placeholder="Category" onChange={e => { this.setState({ category: e.target.value }); this.handleFilter(); }} value={this.state.category} /></th>
                     </tr>
                 </thead>
                 <tbody>
