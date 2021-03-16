@@ -21,7 +21,7 @@ export default class Table extends Component {
         const { data } = this.props;
 
         return (
-            <table className='table' aria-labelledby="tabelLabel">
+            <table className='table table-hover' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
                         <th onClick={() => this.handleOrder("Title")}>
@@ -76,7 +76,7 @@ export default class Table extends Component {
                 </thead>
                 <tbody>
                     {data.map(event =>
-                        <tr key={event.id} className={event.closed != null ? "table-secondary" : ""}>
+                        <tr onClick={() => this.props.onRowClick(event.id)} key={event.id} className={event.closed != null ? "table-secondary" : ""}>
                             <td>{event.title}</td>
                             <td>{new Date(event.geometries[0].date).toLocaleString()}</td>
                             <td>{event.closed != null ? "closed" : "open"}</td>

@@ -23,7 +23,7 @@ namespace Repository
             var queryResult = await _client.ExecuteAsync<EventsObject>(requestOpen);
 
             return queryResult.Data;
-        }
+       }
 
         public async Task<Event> GetEvent(string id)
         {

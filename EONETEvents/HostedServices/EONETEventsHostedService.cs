@@ -22,7 +22,7 @@ namespace EONETEventsTest.HostedServices
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(12));
+            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(2));
             return Task.CompletedTask;
         }
 
