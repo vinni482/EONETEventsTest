@@ -81,7 +81,7 @@ export default class Table extends Component {
                             <td>{new Date(event.geometries[0].date).toLocaleString()}</td>
                             <td>{event.closed != null ? "closed" : "open"}</td>
                             <td>
-                                {event.categories.map(c => (<span className="badge badge-primary" key={c.id}>{c.title}</span>))} 
+                                {event.categories.map(c => (<span className="badge badge-primary" key={c.id} style={{ margin: '5px' }}>{c.title}</span>))} 
                             </td>
                         </tr>
                     )}
