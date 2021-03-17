@@ -99,6 +99,22 @@ namespace EONETEventsTest.Services.Implementation
 
         public async Task<Event> GetEvent(string id)
         {
+            List<Event> events = new List<Event>();
+            List<Event> openEvents = null;
+            List<Event> closedEvents = null;
+
+            _cache.TryGetValue(EventStatus.Open, out openEvents);
+            _cache.TryGetValue(EventStatus.Closed, out closedEvents);
+
+            if (openEvents != null && openEvents.Any())
+                events.AddRange(openEvents);
+            if (closedEvents != null && closedEvents.Any())
+                events.AddRange(closedEvents);
+
+            var eventObj = events.Where(x => x.id == id).FirstOrDefault();
+            if (eventObj != null) 
+                return eventObj;
+
             return await _eONETRepository.GetEvent(id);
         }
 
