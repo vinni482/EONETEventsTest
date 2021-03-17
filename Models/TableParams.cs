@@ -3,7 +3,7 @@
     public class TableParams
     {
         public int PageNumber { get; set; }
-        public int PageSize { get; set; } = 20;
+        public int PageSize { get; set; } = 25;
         public string Order { get; set; } = "asc";
         public string OrderBy { get; set; }
         public string Title { get; set; }

@@ -20,7 +20,7 @@ namespace EONETEventsTest.Controllers
 
         [HttpPost]
         [Route("/events")]
-        public async Task<ActionResult<List<Event>>> GetEvents([FromBody]TableParams tableParams)
+        public async Task<ActionResult<PagedModel<Event>>> GetEvents([FromBody]TableParams tableParams)
         {
             var result = await _eONETService.GetEvents(tableParams);
             return Ok(result);

@@ -25,11 +25,12 @@ namespace EONETEventsTest.Services.Implementation
             _configuration = configuration;
         }
 
-        public async Task<List<Event>> GetEvents(TableParams tableParams)
+        public async Task<PagedModel<Event>> GetEvents(TableParams tableParams)
         {
             List<Event> events = new List<Event>();
             List<Event> openEvents = null;
             List<Event> closedEvents = null;
+            PagedModel<Event> result = new PagedModel<Event>();
 
             _cache.TryGetValue(EventStatus.Open, out openEvents);
             _cache.TryGetValue(EventStatus.Closed, out closedEvents);
@@ -91,10 +92,14 @@ namespace EONETEventsTest.Services.Implementation
                     events = tableParams.Order == "asc" ? events.OrderBy(x => x.categories.Select(c => c.title).FirstOrDefault()).ToList() :
                                                         events.OrderByDescending(x => x.categories.Select(c => c.title).FirstOrDefault()).ToList();
 
+                result.TotalCount = events.Count;
+
                 if (tableParams.PageNumber >= 1)
                     events = events.Skip((tableParams.PageNumber - 1) * tableParams.PageSize).Take(tableParams.PageSize).ToList();
+
+                result.Items = events;
             }
-            return events;
+            return result;
         }
 
         public async Task<Event> GetEvent(string id)

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import TablePagination from '@material-ui/core/TablePagination';
 import Table from './Table'
 import EventModal from './EventModal'
 
@@ -8,11 +9,13 @@ export class FetchData extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { showModal: false, events: [], event: [], loading: true, order: "desc", orderby: "Date" };
+        this.state = { showModal: false, events: [], event: [], loading: true, order: "desc", orderby: "Date", pageSize: 10, pageNumber: 1 };
         this.handleSort = this.handleSort.bind(this);
         this.handleFilter = this.handleFilter.bind(this);
         this.handleTableRowClick = this.handleTableRowClick.bind(this);
         this.toggleEventModal = this.toggleEventModal.bind(this);
+        this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+        this.handleChangePage = this.handleChangePage.bind(this);
     }
 
     componentDidMount() {
@@ -38,6 +41,16 @@ export class FetchData extends Component {
         await this.setState({ showModal: !this.state.showModal });
     }
 
+    async handleChangePage(event, newPage) {
+        await this.setState({ pageNumber: this.state.pageNumber + 1 });
+        this.populateEventsData();
+    };
+
+    async handleChangeRowsPerPage(event) {
+        await this.setState({ pageNumber: 1, pageSize: event.target.value });
+        this.populateEventsData();
+    };
+
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
@@ -48,6 +61,14 @@ export class FetchData extends Component {
             <h1 id="tabelLabel" >EONET Events</h1>
             <p>This component demonstrates fetching data from the server.</p>
                 {contents}
+                <TablePagination
+                    component="div"
+                    count={this.state.eventsCount}
+                    page={this.state.pageNumber-1}
+                    onChangePage={this.handleChangePage}
+                    rowsPerPage={this.state.pageSize}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                />
                 <EventModal data={this.state.event} modal={this.state.showModal} toggle={this.toggleEventModal} />
             </div>
         );
@@ -60,7 +81,8 @@ export class FetchData extends Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                PageNumber: 1,
+                PageNumber: this.state.pageNumber,
+                PageSize: this.state.pageSize,
                 OrderBy: this.state.orderby,
                 Order: this.state.order,
                 Title: this.state.title,
@@ -71,7 +93,7 @@ export class FetchData extends Component {
         });
 
         const data = await response.json();
-        this.setState({ events: data, loading: false });
+        this.setState({ events: data.items, eventsCount: data.totalCount, loading: false });
     }
 
     async populateEventData(eventId) {

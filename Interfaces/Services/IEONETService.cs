@@ -6,7 +6,7 @@ namespace EONETEventsTest.Services.Interfaces
 {
     public interface IEONETService
     {
-        Task<List<Event>> GetEvents(TableParams tableParams);
+        Task<PagedModel<Event>> GetEvents(TableParams tableParams);
         Task<Event> GetEvent(string id);
         Task<List<Event>> UpdateEventsCache(string eventStatus);
     }
