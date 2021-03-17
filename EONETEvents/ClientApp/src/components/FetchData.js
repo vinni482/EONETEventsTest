@@ -28,7 +28,7 @@ export class FetchData extends Component {
     }
 
     async handleFilter(title, date, status, category) {
-        await this.setState({ title: title, date: date, status: status, category: category });
+        await this.setState({ pageNumber: 1, title: title, date: date, status: status, category: category });
         this.populateEventsData();
     }
 
