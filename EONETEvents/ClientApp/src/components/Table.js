@@ -7,7 +7,7 @@ export default class Table extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { order: "desc", orderby: "", title: "", date: "", status: "", category: "" };
+        this.state = { order: "", orderby: "", title: "", date: "", status: "", category: "" };
     }
     
     async handleOrder(orderby) {

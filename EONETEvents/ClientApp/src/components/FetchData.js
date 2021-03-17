@@ -54,22 +54,23 @@ export class FetchData extends Component {
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : <Table data={this.state.events} onSort={this.handleSort} onFilter={this.handleFilter} onRowClick={this.handleTableRowClick} />;
-
-        return (
-            <div>
-            <h1 id="tabelLabel" >EONET Events</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-                {contents}
+            : <div>
+                <Table data={this.state.events} onSort={this.handleSort} onFilter={this.handleFilter} onRowClick={this.handleTableRowClick} />
                 <TablePagination
                     component="div"
                     count={this.state.eventsCount}
                     page={this.state.pageNumber-1}
                     onChangePage={this.handleChangePage}
                     rowsPerPage={this.state.pageSize}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                />
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage} />
                 <EventModal data={this.state.event} modal={this.state.showModal} toggle={this.toggleEventModal} />
+              </div>;
+
+        return (
+            <div>
+            <h1 id="tabelLabel" >EONET Events</h1>
+            <p>This component demonstrates fetching data from the server.</p>
+                {contents}
             </div>
         );
     }
