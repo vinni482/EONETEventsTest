@@ -42,7 +42,7 @@ export class FetchData extends Component {
     }
 
     async handleChangePage(event, newPage) {
-        await this.setState({ pageNumber: this.state.pageNumber + 1 });
+        await this.setState({ pageNumber: newPage+1 });
         this.populateEventsData();
     };
 
